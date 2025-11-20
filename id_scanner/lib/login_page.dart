@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'signup_page.dart';
 import 'main.dart'; //
 
-const String baseUrl = 'http://172.20.10.10:8000';
+const String baseUrl = 'http://192.168.1.47:8000';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

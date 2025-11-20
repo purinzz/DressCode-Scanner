@@ -34,7 +34,7 @@ class _ReportPageState extends State<ReportPage> {
   Uint8List? _pickedImageBytes;
   String? _pickedImageName;
 
-  final String backendUrl = "http://172.20.10.10:8000/submit_report/";
+  final String backendUrl = "http://192.168.1.47:8000/submit_report/";
 
   Future<void> _openGoogleDriveFolder() async {
     try {

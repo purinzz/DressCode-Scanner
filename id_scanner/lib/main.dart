@@ -5,7 +5,7 @@ import 'result_page.dart';
 import 'settings_page.dart';
 import 'login_page.dart';
 
-const String baseUrl = 'http://172.20.10.10:8000';
+const String baseUrl = 'http://192.168.1.47:8000';
 
 void main() {
   runApp(const MyApp());

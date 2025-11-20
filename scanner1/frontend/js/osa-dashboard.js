@@ -5,6 +5,9 @@ let currentSort = { field: null, ascending: true };
 let allReports = [];
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Load saved sort preference from localStorage
+  loadSortPreference();
+  
   fetchStats();
   fetchViolations();
   loadProfile();
@@ -33,6 +36,24 @@ async function fetchStats() {
   }
 }
 
+// ====== SAVE SORT PREFERENCE TO LOCALSTORAGE ======
+function saveSortPreference() {
+  localStorage.setItem('osaDashboardSort', JSON.stringify(currentSort));
+}
+
+// ====== LOAD SORT PREFERENCE FROM LOCALSTORAGE ======
+function loadSortPreference() {
+  const saved = localStorage.getItem('osaDashboardSort');
+  if (saved) {
+    try {
+      currentSort = JSON.parse(saved);
+    } catch (error) {
+      console.error('Error loading sort preference:', error);
+      currentSort = { field: null, ascending: true };
+    }
+  }
+}
+
 // ====== FETCH ALL VIOLATIONS ======
 async function fetchViolations() {
   try {
@@ -57,8 +78,12 @@ async function fetchViolations() {
       r.offense_no = studentOffenseCount[studentName];
     });
 
-    // Render with current sort if any
-    renderViolationsTable(allReports);
+    // Apply saved sort if one exists
+    if (currentSort.field) {
+      applySortToReports(currentSort.field);
+    } else {
+      renderViolationsTable(allReports);
+    }
   } catch (error) {
     console.error('Error fetching violations:', error);
   }
@@ -71,16 +96,15 @@ function renderViolationsTable(reports) {
 
   reports.forEach(report => {
     const row = document.createElement('tr');
-    // Convert to Philippines time (UTC+8)
-    const phTime = new Date(new Date(report.scanned_at).toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
-    const dateTimeString = phTime.toLocaleString('en-US', { 
+    // Display the timestamp exactly as stored in database
+    const dateTimeString = new Date(report.scanned_at).toLocaleString('en-US', { 
       year: 'numeric', 
       month: '2-digit', 
       day: '2-digit', 
       hour: '2-digit', 
       minute: '2-digit', 
       second: '2-digit',
-      hour12: true 
+      hour12: true
     });
     
     row.innerHTML = `
@@ -114,6 +138,14 @@ function sortTable(field) {
     currentSort.ascending = true;
   }
 
+  // Save sort preference to localStorage
+  saveSortPreference();
+
+  applySortToReports(field);
+}
+
+// ====== APPLY SORT TO REPORTS ======
+function applySortToReports(field) {
   let sortedReports = [...allReports];
 
   switch(field) {

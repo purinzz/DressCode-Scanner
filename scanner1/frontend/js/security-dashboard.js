@@ -132,10 +132,9 @@ async function loadTodayViolations() {
     }
 
     todayViolations.forEach(v => {
-      // Convert to Philippines time (UTC+8)
-      const phTime = new Date(new Date(v.scanned_at).toLocaleString('en-US', { timeZone: 'Asia/Manila' }));
-      const date = phTime.toLocaleDateString("en-CA");
-      const time = phTime.toLocaleTimeString("en-US", { hour12: true });
+      // Display the timestamp exactly as stored in database
+      const date = new Date(v.scanned_at).toLocaleDateString("en-CA");
+      const time = new Date(v.scanned_at).toLocaleTimeString("en-US", { hour12: true });
 
       const row = document.createElement("tr");
       row.innerHTML = `

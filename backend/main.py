@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 from pymongo import MongoClient
 from bson import ObjectId
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 from fastapi.staticfiles import StaticFiles
 from passlib.context import CryptContext
@@ -185,11 +185,12 @@ async def submit_report(report: ReportIn):
         saved_image_path = report.image_path  # Save Google Drive URL
 
     # Build report data
+    scan_time = report.scan_date or report.scanned_at or datetime.now(timezone.utc)
     report_data = {
         "student_info": report.student_info,
         "violation": violation_text,
         "no_of_offense": offense_number,
-        "scanned_at": report.scan_date or report.scanned_at or datetime.utcnow(),
+        "scanned_at": scan_time.isoformat() if isinstance(scan_time, datetime) else scan_time,
         "image_path": saved_image_path,
         "submitted_by": report.reporter_name or "Anonymous",
         "isDeleted": False,
@@ -236,6 +237,8 @@ def get_reports(current_user: str = Depends(get_current_user)):
     for r in reports_collection.find().sort("scanned_at", -1):
         r["_id"] = str(r["_id"])
         r["no_of_offense"] = r.get("no_of_offense", 1)
+        if isinstance(r.get("scanned_at"), datetime):
+            r["scanned_at"] = r["scanned_at"].isoformat()
         reports.append(r)
     return {"reports": reports}
 

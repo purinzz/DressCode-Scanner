@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'login_page.dart';
 
-const String baseUrl = 'http://172.20.10.10:8000'; // your backend IP
+const String baseUrl = 'http://192.168.1.47:8000'; // your backend IP
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
